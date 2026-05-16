@@ -1,0 +1,58 @@
+<?php
+/**	op-module-counter:/view.phtml
+ *
+ * @created   2026-05-17
+ * @license   Apache-2.0
+ * @package   op-module-counter
+ * @author    Codex CLI
+ * @copyright (C) 2026 Tomoaki Nagahara
+ */
+
+/* @var $counts array */
+?>
+<style>
+.op-module-counter {
+	display: inline-grid;
+	grid-template-columns: max-content max-content max-content;
+}
+.op-module-counter-row {
+	display: contents;
+}
+.op-module-counter-key {
+	text-align: right;
+}
+.op-module-counter-separator {
+	text-align: center;
+	white-space: pre;
+}
+.op-module-counter-value {
+	text-align: left;
+}
+</style>
+<div class="op-module-counter">
+	<div class="op-module-counter-row">
+		<span class="op-module-counter-key">Today</span>
+		<span class="op-module-counter-separator"> : </span>
+		<span class="op-module-counter-value"><?= number_format($counts['today']) ?></span>
+	</div>
+	<div class="op-module-counter-row">
+		<span class="op-module-counter-key">Yesterday</span>
+		<span class="op-module-counter-separator"> : </span>
+		<span class="op-module-counter-value"><?= number_format($counts['yesterday']) ?></span>
+	</div>
+	<div class="op-module-counter-row">
+		<span class="op-module-counter-key">This month</span>
+		<span class="op-module-counter-separator"> : </span>
+		<span class="op-module-counter-value"><?= number_format($counts['month']) ?></span>
+	</div>
+	<div class="op-module-counter-row">
+		<span class="op-module-counter-key">This year</span>
+		<span class="op-module-counter-separator"> : </span>
+		<span class="op-module-counter-value"><?= number_format($counts['year']) ?></span>
+	</div>
+	<div class="op-module-counter-row">
+		<span class="op-module-counter-key">Total</span>
+		<span class="op-module-counter-separator"> : </span>
+		<span class="op-module-counter-value"><?= number_format($counts['total']) ?></span>
+	</div>
+</div>

@@ -1,0 +1,19 @@
+# init.php
+
+`init.php` checks whether the access counter can use `asset/db/`.
+
+`save.php` and `view.php` call it before reading or writing counter files.
+If guidance must be displayed, `init.php` renders `init.phtml` through `OP()->Template()`.
+
+It checks:
+
+- Whether `asset/db/` exists.
+- Whether `asset/db/` is a directory.
+- Whether `asset/db/` is writable by the current PHP process.
+
+If the check fails, it displays setup steps for the site operator and returns `false`.
+The counter does not read or write storage when initialization fails.
+
+When possible, the setup guidance also displays the PHP process user and group.
+It checks POSIX process information first and falls back to `id -un` / `id -gn` when shell execution is available.
+The displayed `chown` command uses that detected user and group so the operator can apply a concrete ownership fix.

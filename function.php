@@ -1,5 +1,5 @@
 <?php
-/** op-module-counter:/function.php
+/**	op-module-counter:/function.php
  *
  * @created   2026-05-16
  * @license   Apache-2.0
@@ -7,17 +7,17 @@
  * @copyright (C) 2026 Tomoaki Nagahara
  */
 
-/** declare
+/**	declare
  *
  */
 declare(strict_types=1);
 
-/** namespace
+/**	namespace
  *
  */
 namespace OP\MODULE\COUNTER;
 
-/** Return the current counter target domain.
+/**	Return the current counter target domain.
  *
  * @return string
  */
@@ -34,19 +34,28 @@ function Domain() : string
 	return $domain ?: 'unknown-host';
 }
 
-/** Return the counter storage root.
+/**	Return the counter storage root.
  *
  * @return string
  */
 function StorageRoot() : string
 {
-	return _ROOT_ASSET_ . 'db/counter/' . Domain() . '/';
+	return DbRoot() . 'counter/' . Domain() . '/';
 }
 
-/** Return counter file paths for a date.
+/**	Return the database storage root.
+ *
+ * @return string
+ */
+function DbRoot() : string
+{
+	return _ROOT_ASSET_ . 'db/';
+}
+
+/**	Return counter file paths for a date.
  *
  * @param  \DateTimeImmutable $date
- * @return array<string,string>
+ * @return array
  */
 function Paths(\DateTimeImmutable $date) : array
 {
@@ -63,9 +72,9 @@ function Paths(\DateTimeImmutable $date) : array
 	];
 }
 
-/** Increment today's counter files.
+/**	Increment today's counter files.
  *
- * @return array<string,int>
+ * @return array
  */
 function Increment() : array
 {
@@ -78,9 +87,40 @@ function Increment() : array
 	return $counts;
 }
 
-/** Read display counters.
+/**	Return whether the current request should increment the counter.
  *
- * @return array<string,int>
+ * @return bool
+ */
+function ShouldCount() : bool
+{
+	if(!OP()->isAdmin() ){
+		return true;
+	}
+
+	return IsOne(OP()->Request('admin'));
+}
+
+/**	Return whether a request value is one.
+ *
+ * @param  mixed $value
+ * @return bool
+ */
+function IsOne(mixed $value) : bool
+{
+	if( \is_int($value) or \is_float($value) ){
+		return $value == 1;
+	}
+
+	if( \is_string($value) ){
+		return \trim($value) === '1';
+	}
+
+	return false;
+}
+
+/**	Read display counters.
+ *
+ * @return array
  */
 function Counts() : array
 {
@@ -99,7 +139,7 @@ function Counts() : array
 	];
 }
 
-/** Increment one counter file with an exclusive lock.
+/**	Increment one counter file with an exclusive lock.
  *
  * @param  string $path
  * @return int
@@ -138,7 +178,7 @@ function IncrementFile(string $path) : int
 	return $count;
 }
 
-/** Read one counter file with a shared lock.
+/**	Read one counter file with a shared lock.
  *
  * @param  string $path
  * @return int

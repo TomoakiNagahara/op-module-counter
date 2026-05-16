@@ -8,6 +8,12 @@ Use it from a template:
 <?php OP()->Template('asset:/module/counter/save.php') ?>
 ```
 
+It calls `init.php` before writing counter files.
+If `asset/db/` is not ready, it displays setup guidance and does not increment the counter.
+
+If `OP()->isAdmin()` is `true`, it does not increment the counter by default.
+An admin request is counted only when `OP()->Request('admin')` is `1`.
+
 It updates these files for the current request domain:
 
 - `asset/db/counter/<domain>/total.txt`

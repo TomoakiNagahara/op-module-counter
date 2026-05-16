@@ -29,3 +29,10 @@ Counter files are stored under `asset/db/counter/<domain>/`.
 
 The daily file stores the count for one day.
 The yearly, monthly, and total files are updated at save time so display does not need to scan every daily file.
+
+## Initialization
+
+`save.php` and `view.php` call `init.php` before reading or writing counter files.
+
+`init.php` checks whether `asset/db/` exists, is a directory, and is writable by PHP.
+If the storage is not ready, it displays recovery steps instead of reading or writing counter files.
