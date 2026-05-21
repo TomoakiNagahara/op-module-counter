@@ -10,6 +10,7 @@ Use it from a template:
 
 It calls `init.php` before writing counter files.
 If `asset/db/` is not ready, it displays setup guidance and does not increment the counter.
+The reusable save behavior is implemented by `Counter.class.php`.
 
 If `OP()->isAdmin()` is `true`, it does not increment the counter by default.
 An admin request is counted only when `OP()->Request('admin')` is `1`.

@@ -5,6 +5,9 @@
 `save.php` and `view.php` call it before reading or writing counter files.
 If guidance must be displayed, `init.php` renders `init.phtml` through `OP()->Template()`.
 
+`init.php` is intentionally a thin entry file.
+The reusable initialization logic is owned by `Counter.class.php` so the module behavior is covered by the ONEPIECE Framework class-based CI flow.
+
 It checks:
 
 - Whether `asset/db/` exists.

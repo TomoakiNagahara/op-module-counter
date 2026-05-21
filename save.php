@@ -17,14 +17,16 @@ declare(strict_types=1);
  */
 namespace OP;
 
-require_once __DIR__ . '/init.php';
+$initialized = require __DIR__ . '/init.php';
 
-if(!MODULE\COUNTER\Init() ){
+if(!$initialized ){
 	return false;
 }
 
-if(!MODULE\COUNTER\ShouldCount() ){
+$counter = new MODULE\Counter();
+
+if(!$counter->ShouldCount() ){
 	return false;
 }
 
-return MODULE\COUNTER\Increment();
+return $counter->Increment();

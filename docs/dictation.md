@@ -21,6 +21,10 @@
  * PHPdocの `@author`を `Codex CLI` にする
  * 複数行コメントの開始の　`/**` の次はスペースではなくタブにすること
  * `OP()` はネームスペースなしでどこでも呼べるのでバックスラッシュは要らない
+ * `function.php` では CI が行われないため、再利用する module logic は ONEPIECE Framework の class-based CI に従って `Counter.class.php` に置く
+ * `Counter.class.php` は `OP_CI` を使い、対応する CI loader は `ci/Counter.php` に置く
+ * CI config は、`ci/Counter.php` から同名フォルダを読み込み、各メソッド名のphpファイルを `ci/Counter/<Method>.php` に置く
+ * CI file の汎用的な作法は `asset/docs/cicd/ci-file-layout.md` と `asset/docs/cicd/ci-file-layout.ja.md` に残す
  * `phtml` ファイル内にもPHPDocを追加して下さい。
  * `phtml` ファイル内の変数には、`/* @var */` を使って型ヒントを付ける
 

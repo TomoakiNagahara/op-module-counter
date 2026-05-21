@@ -5,6 +5,9 @@
 `save.php` と `view.php` は、カウンターファイルを読み書きする前に `init.php` を呼び出します。
 案内を表示する必要がある場合、`init.php` は `OP()->Template()` 経由で `init.phtml` を表示します。
 
+`init.php` は意図的に薄い entry file です。
+再利用する initialization logic は `Counter.class.php` が所有します。これにより、module behavior が ONEPIECE Framework の class-based CI flow の対象になります。
+
 確認する内容は次の通りです。
 
 - `asset/db/` が存在するか。

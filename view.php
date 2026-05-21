@@ -17,13 +17,14 @@ declare(strict_types=1);
  */
 namespace OP;
 
-require_once __DIR__ . '/init.php';
+$initialized = require __DIR__ . '/init.php';
 
-if(!MODULE\COUNTER\Init() ){
+if(!$initialized ){
 	return false;
 }
 
-$counts = MODULE\COUNTER\Counts();
+$counter = new MODULE\Counter();
+$counts  = $counter->Counts();
 
 OP()->Template('view.phtml', [
 	'counts' => $counts,

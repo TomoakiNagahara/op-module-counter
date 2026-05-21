@@ -11,6 +11,7 @@ Use it from a template:
 
 It calls `init.php` before reading counter files.
 If `asset/db/` is not ready, it displays setup guidance instead of the counter values.
+The reusable read behavior is implemented by `Counter.class.php`.
 
 It displays:
 
