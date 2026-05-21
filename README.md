@@ -34,5 +34,12 @@ The yearly, monthly, and total files are updated at save time so display does no
 
 `save.php` and `view.php` call `init.php` before reading or writing counter files.
 
-`init.php` checks whether `asset/db/` exists, is a directory, and is writable by PHP.
+`init.php` is a thin entry file that calls `Counter.class.php`.
+`Counter.class.php` checks whether `asset/db/` exists, is a directory, and is writable by PHP.
 If the storage is not ready, it displays recovery steps instead of reading or writing counter files.
+
+## Implementation
+
+Reusable module logic is implemented in `Counter.class.php` so ONEPIECE Framework CI can inspect the class.
+The matching CI loader is `ci/Counter.php`.
+Method-level CI configs are stored under `ci/Counter/`.
