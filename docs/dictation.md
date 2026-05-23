@@ -31,13 +31,22 @@
 ## 初期化
  * `asset/db/` のパーミッションが適切かチェックして、不適切ならどうすればいいか、ユーザーに手順を教えてあげて欲しい。
  * チェックは `init.php` にまとめて。それを `save.php` と `view.php` から呼び出す形式にしたい。
+ * `DisplayInitGuidance()`、`PhpProcessOwner()`、`ShellCommand()` は初期化エラー時だけ必要なので、`Counter.class.php` ではなく別クラスに分離する。
+ * ONEPIECE Framework ではメモリーの無駄使いは禁忌なので、不要な処理を通常 request の memory に展開しない。
+ * module の main class は `OP\MODULE` に置くが、sub class は他 module と衝突しないように module 名の subnamespace に隔離する。counter module の sub class は `OP\MODULE\COUNTER` に置く。
 
 ## 保存
  * topページからは、`<?php OP()->Template('asset:/module/counter/save.php') ?>`で呼び出すと、訪問毎に1ずつカウントアップされる。
  * データベースは使わず、テキストファイルに保存する。
  * テキストファイルの保存先は `asset/db/counter/（ドメイン名）/yyyy/mm/dd.txt` です。
  * ドメイン名は、自分のドメイン名です。これは、サブドメイン毎にアクセス回数を別に保存したいからです。
- * OP()->isAdmin()が `true` の場合はカウントしない。ただし、Admin判定が `true` でも `OP()->Request('admin')` で取得した値が `1` の場合はカウントする
+ * 原則、全てのアクセスをカウントする
+ * `OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`OP()->isAdmin()` をチェックし、`true` ならカウントを skip する
+ * admin access を skip した場合は、`D()` で debug message を出す
+ * UNIT/MODULE の default config は、その UNIT/MODULE directory の `config.php` に置く
+ * counter module の default config template は `asset/module/counter/config.php` に置く
+ * module 側の `config.php` は自動的に読み込まれない
+ * counter module の user-defined config は、user が `asset/module/counter/config.php` を `asset/config/counter.php` に copy して作る
 
 ## 表示
  * topページからは `<?php OP()->Template('asset:/module/counter/view.php') ?>` で呼び出すと、訪問回数が表示される。

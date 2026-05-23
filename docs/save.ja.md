@@ -12,8 +12,10 @@
 `asset/db/` が準備できていない場合は、設定手順を表示し、カウンターを加算しません。
 再利用する save behavior は `Counter.class.php` に実装されています。
 
-`OP()->isAdmin()` が `true` の場合、通常はカウンターを加算しません。
-ただし、`OP()->Request('admin')` が `1` の場合だけ、管理者リクエストでも加算します。
+標準では全ての request をカウントします。
+`OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`Counter::ShouldCount()` は `OP()->isAdmin()` をチェックします。
+その config value が設定され、かつ `OP()->isAdmin()` が `true` の場合、counter は加算を skip します。
+管理者リクエストを skip した場合は、administrator 向けに `D()` で常に debug message を出します。
 
 現在のリクエストドメインに対して、次のファイルを更新します。
 

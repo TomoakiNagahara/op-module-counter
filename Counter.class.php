@@ -32,6 +32,10 @@ class Counter
 
 	/**	Return the deterministic methods inspected by module CI.
 	 *
+	 * Runtime methods touch request state, config, files, or debug output.
+	 * CI_AllMethods() keeps class-based CI focused on deterministic helpers
+	 * that can be verified without mutating counter storage.
+	 *
 	 * @return array
 	 */
 	function CI_AllMethods() : array
@@ -51,7 +55,8 @@ class Counter
 		$issues = $this->InitIssues();
 
 		if( $issues ){
-			$this->DisplayInitGuidance($issues);
+			require_once(__DIR__ . '/CounterInitGuidance.class.php');
+			(new COUNTER\CounterInitGuidance())->DisplayInitGuidance($issues);
 			return false;
 		}
 
@@ -64,11 +69,17 @@ class Counter
 	 */
 	function ShouldCount() : bool
 	{
+		if(!$this->IsAdminSkipEnabled() ){
+			return true;
+		}
+
 		if(!OP()->isAdmin() ){
 			return true;
 		}
 
-		return $this->IsOne(OP()->Request('admin'));
+		D('Access counter skipped increment because counter config skips admin access.');
+
+		return false;
 	}
 
 	/**	Increment today's counter files.
@@ -143,13 +154,44 @@ class Counter
 		return $domain ?: 'unknown-host';
 	}
 
+	/**	Return whether admin access should be skipped.
+	 *
+	 * @return bool
+	 */
+	private function IsAdminSkipEnabled() : bool
+	{
+		if(!$this->HasConfigFile() ){
+			return false;
+		}
+
+		return ($this->Config()['skip'] ?? null) === 'admin';
+	}
+
+	/**	Return counter module config.
+	 *
+	 * @return array
+	 */
+	private function Config() : array
+	{
+		return OP()->Config('counter');
+	}
+
+	/**	Return whether counter application config exists.
+	 *
+	 * @return bool
+	 */
+	private function HasConfigFile() : bool
+	{
+		return is_file(OP()->Path('asset:/config/counter.php')) or is_file(OP()->Path('asset:/config/_counter.php'));
+	}
+
 	/**	Return the current counter target domain.
 	 *
 	 * @return string
 	 */
 	private function Domain() : string
 	{
-		$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+		$host = $_SERVER['SERVER_NAME'] ?? 'localhost';
 
 		return $this->NormalizeDomain($host);
 	}
@@ -169,7 +211,7 @@ class Counter
 	 */
 	private function DbRoot() : string
 	{
-		return _ROOT_ASSET_ . 'db/';
+		return OP()->Path('asset:/db/');
 	}
 
 	/**	Return counter file paths for a date.
@@ -216,102 +258,6 @@ class Counter
 		}
 
 		return $issues;
-	}
-
-	/**	Display recovery guidance for asset/db/.
-	 *
-	 * @param  array $issues
-	 * @return void
-	 */
-	private function DisplayInitGuidance(array $issues) : void
-	{
-		$process = $this->PhpProcessOwner();
-		$user    = $process['user'];
-		$group   = $process['group'];
-		$owner   = ($user and $group) ? "{$user}:{$group}" : null;
-		$chown   = $owner ? "chown -R {$owner} asset/db" : 'chown -R <php-user>:<php-group> asset/db';
-
-		OP()->Template('init.phtml', [
-			'issues'  => $issues,
-			'process' => $process,
-			'chown'   => $chown,
-		]);
-	}
-
-	/**	Return the current PHP process owner.
-	 *
-	 * @return array
-	 */
-	private function PhpProcessOwner() : array
-	{
-		$uid = \function_exists('posix_geteuid') ? \posix_geteuid() : null;
-		$gid = \function_exists('posix_getegid') ? \posix_getegid() : null;
-
-		$user  = null;
-		$group = null;
-
-		if( $uid !== null and \function_exists('posix_getpwuid') ){
-			$info = \posix_getpwuid($uid);
-			$user = $info['name'] ?? null;
-		}
-
-		if( $gid !== null and \function_exists('posix_getgrgid') ){
-			$info = \posix_getgrgid($gid);
-			$group = $info['name'] ?? null;
-		}
-
-		if(!$user ){
-			$user = $this->ShellCommand('id -un');
-		}
-
-		if(!$group ){
-			$group = $this->ShellCommand('id -gn');
-		}
-
-		return [
-			'user'        => $user,
-			'group'       => $group,
-			'user_label'  => $this->Label($user,  'uid', $uid),
-			'group_label' => $this->Label($group, 'gid', $gid),
-		];
-	}
-
-	/**	Return a shell command result if shell execution is available.
-	 *
-	 * @param  string $command
-	 * @return string|null
-	 */
-	private function ShellCommand(string $command) : ?string
-	{
-		if(!\function_exists('shell_exec') ){
-			return null;
-		}
-
-		$disabled = \ini_get('disable_functions') ?: '';
-		if( \in_array('shell_exec', \array_map('trim', \explode(',', $disabled)), true) ){
-			return null;
-		}
-
-		$result = \shell_exec($command . ' 2>/dev/null');
-		$result = \is_string($result) ? \trim($result) : '';
-
-		return $result !== '' ? $result : null;
-	}
-
-	/**	Return a user or group display label.
-	 *
-	 * @param  string|null $name
-	 * @param  string      $id_name
-	 * @param  int|null    $id
-	 * @return string
-	 */
-	private function Label(?string $name, string $id_name, ?int $id) : string
-	{
-		if(!$name ){
-			return 'unknown';
-		}
-
-		return $id === null ? $name : "{$name} ({$id_name}: {$id})";
 	}
 
 	/**	Increment one counter file with an exclusive lock.
