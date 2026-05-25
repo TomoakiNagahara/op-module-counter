@@ -44,7 +44,7 @@ Store text files under:
 asset/db/counter/<domain>/yyyy/mm/dd.txt
 ```
 
-The domain is the current request domain. Subdomains must be counted separately.
+The domain is the configured server name from `$_SERVER['SERVER_NAME']`. Subdomains must be counted separately.
 
 Maintain precomputed total files so display does not need to scan every daily file:
 
@@ -70,18 +70,26 @@ Keep `init.php`, `save.php`, and `view.php` as thin entry files.
 `Counter.class.php` must check whether `asset/db/` exists, is a directory, and is writable by the current PHP process.
 
 If storage is not ready, show English guidance through `init.phtml`. Include concrete setup commands and the detected PHP process user and group when possible.
+Keep that guidance rendering and PHP process owner detection in `CounterInitGuidance.class.php`, loaded only after initialization fails. Do not keep rarely used error-handling logic in `Counter.class.php`; ONEPIECE Framework treats unnecessary memory use as forbidden.
+
+## Config
+
+Default module config belongs in `config.php` inside this module.
+User-defined application config belongs in `asset/config/counter.php`.
+Optional local-only overrides may use `asset/config/_counter.php`.
+
+The module-side `config.php` is a template and is not loaded automatically.
+Users should copy it to `asset/config/counter.php` when they want to enable or customize counter config.
+The admin skip behavior is controlled by `skip => 'admin'`.
+When admin access is skipped, always output a `D()` message.
 
 ## Counting Rules
 
-Do not count admin access by default.
+Count every request by default.
 
-If `OP()->isAdmin()` is `true`, skip incrementing.
+Only check `OP()->isAdmin()` when `OP()->Config('counter')['skip'] === 'admin'`.
 
-Exception: if `OP()->isAdmin()` is `true` and `OP()->Request('admin')` is `1`, then count the request.
-
-Treat only this request value as count-enabled for admin requests:
-
-- `1`
+When that config value is set and `OP()->isAdmin()` is `true`, skip incrementing.
 
 ## Display Rules
 
@@ -125,7 +133,7 @@ Keep PHPDoc Eclipse-compatible in all PHP and PHTML files. Avoid PHPStan/Psalm-s
 
 Use `OP()->Request()` instead of raw request superglobals where appropriate.
 
-Avoid raw `$_GET`, `$_POST`, `$_REQUEST`, `$_COOKIE`, `$_SESSION`, and `$_SERVER` unless there is a clear reason. The current domain detection is one of the few places where server host information is needed.
+Avoid raw `$_GET`, `$_POST`, `$_REQUEST`, `$_COOKIE`, `$_SESSION`, and `$_SERVER` unless there is a clear reason. The current domain detection is one of the few places where configured server name information is needed.
 
 Do not use `var_dump()` or `print_r()` for debugging.
 
@@ -161,6 +169,7 @@ When behavior changes, update the matching module documentation.
 
 Use same-name documentation where possible:
 
+- `docs/config.md` and `docs/config.ja.md`
 - `docs/init.md` and `docs/init.ja.md`
 - `docs/save.md` and `docs/save.ja.md`
 - `docs/view.md` and `docs/view.ja.md`
@@ -174,8 +183,8 @@ For PHP changes, run syntax checks on changed PHP and PHTML files.
 For counter behavior, verify at least:
 
 - normal access increments
-- admin access does not increment
-- admin access with `admin=1` increments
+- admin access increments when counter config does not set `skip => 'admin'`
+- admin access does not increment when counter config sets `skip => 'admin'`
 - uninitialized `asset/db/` displays setup guidance
 - initialized storage displays counter values
 - PHP files do not contain display HTML

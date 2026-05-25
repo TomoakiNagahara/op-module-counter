@@ -44,7 +44,7 @@ top page から次のように呼び出します。
 asset/db/counter/<domain>/yyyy/mm/dd.txt
 ```
 
-domain は現在の request domain です。subdomain ごとに別々にカウントする必要があります。
+domain は `$_SERVER['SERVER_NAME']` の configured server name です。subdomain ごとに別々にカウントする必要があります。
 
 表示時にすべての日別ファイルを走査しなくてよいように、集計済みの total file を維持してください。
 
@@ -70,18 +70,26 @@ asset/db/counter/<domain>/yyyy/mm/dd.txt
 `Counter.class.php` は、`asset/db/` が存在するか、directory か、現在の PHP process から書き込めるかを確認します。
 
 保存先が準備できていない場合は、`init.phtml` を通して英語の案内を表示してください。可能であれば、具体的な setup command と検出した PHP process の user / group を含めてください。
+その guidance rendering と PHP process owner detection は、initialization failure 後にだけ読み込む `CounterInitGuidance.class.php` に置いてください。ほとんど使われない error-handling logic を `Counter.class.php` に置かないでください。ONEPIECE Framework では不要な memory use は禁忌です。
+
+## Config
+
+default module config は、この module の `config.php` に置きます。
+user-defined application config は `asset/config/counter.php` に置きます。
+任意の local-only override は `asset/config/_counter.php` を使えます。
+
+module 側の `config.php` は template であり、自動では読み込まれません。
+counter config を有効化または変更したい user は、それを `asset/config/counter.php` に copy してください。
+admin skip behavior は `skip => 'admin'` で制御します。
+admin access を skip した場合は、常に `D()` message を出してください。
 
 ## カウント条件
 
-admin access は標準ではカウントしないでください。
+標準では全ての request をカウントしてください。
 
-`OP()->isAdmin()` が `true` の場合は加算しません。
+`OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`OP()->isAdmin()` をチェックしてください。
 
-例外として、`OP()->isAdmin()` が `true` でも `OP()->Request('admin')` が `1` の場合は、その request をカウントします。
-
-admin request のカウントを有効にする値は、次だけです。
-
-- `1`
+その config value が設定され、かつ `OP()->isAdmin()` が `true` の場合は加算しません。
 
 ## 表示仕様
 
@@ -125,7 +133,7 @@ CI file を追加・変更する前に `asset/docs/cicd/ci-file-layout.md` を�
 
 request value を扱う場合は、適切な箇所で `OP()->Request()` を使ってください。
 
-明確な理由がない限り、raw `$_GET`, `$_POST`, `$_REQUEST`, `$_COOKIE`, `$_SESSION`, `$_SERVER` は避けてください。現在の domain detection は、server host information が必要な数少ない例外です。
+明確な理由がない限り、raw `$_GET`, `$_POST`, `$_REQUEST`, `$_COOKIE`, `$_SESSION`, `$_SERVER` は避けてください。現在の domain detection は、configured server name information が必要な数少ない例外です。
 
 debug に `var_dump()` や `print_r()` を使わないでください。
 
@@ -161,6 +169,7 @@ PHPDoc file header を追加する場合は、次のようにしてください�
 
 可能な限り、同名の documentation を使ってください。
 
+- `docs/config.md` と `docs/config.ja.md`
 - `docs/init.md` と `docs/init.ja.md`
 - `docs/save.md` と `docs/save.ja.md`
 - `docs/view.md` と `docs/view.ja.md`
@@ -174,8 +183,8 @@ PHP を変更した場合は、変更した PHP / PHTML file の syntax check �
 counter behavior について、少なくとも次を確認してください。
 
 - normal access で加算される
-- admin access では加算されない
-- admin access でも `admin=1` なら加算される
+- counter config が `skip => 'admin'` を設定していない場合は admin access でも加算される
+- counter config が `skip => 'admin'` を設定している場合は admin access では加算されない
 - 未初期化の `asset/db/` では setup guidance が表示される
 - 初期化済み storage では counter values が表示される
 - PHP file に表示 HTML が含まれていない
