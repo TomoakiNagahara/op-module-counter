@@ -125,6 +125,18 @@ HTML markup は `.phtml` template file に置き、`OP()->Template()` で表示�
 ONEPIECE Framework の分割 CI layout を使ってください。CI から呼ばれる loader は `ci/Counter.php` で、各 method の CI は `ci/Counter/<Method>.php` に分けます。
 CI file を追加・変更する前に `asset/docs/cicd/ci-file-layout.md` を読んでください。
 
+## CI target boundary
+
+`./cicd` は、この module repository 内の visible な `*.class.php` file を class CI target として扱います。CI client は module root を走査し、`CounterInitGuidance.class.php` を `OP\MODULE\COUNTER\CounterInitGuidance` として解決して instantiate し、その object が `OP_CI` を use していることを要求します。
+
+[DOC-ISSUE] `This object has not use OP_CI. (OP\MODULE\COUNTER\CounterInitGuidance)` という error は、`CounterInitGuidance.class.php` が lazy-loaded initialization-error helper であるにもかかわらず、その filename と配置が CI class target pattern に一致しているために発生します。今後の agent は、CI contract も実装しない限り、non-CI helper class を module root の visible な `*.class.php` file として追加しないでください。
+
+この module では、`CounterInitGuidance.class.php` は CI target として扱ってください。refactor によって guidance behavior が壊れる可能性があるためです。memory-saving goal は、initialization failure 後にだけ file を lazy-load することで維持しつつ、class 自体は CI に対応させてください。
+
+外部 stub を第一候補にしないでください。ONEPIECE Framework には、deterministic な CI behavior のために `OP()->isCI()` がすでにあります。environment-dependent read は小さな method に分け、CI 中は固定値を返してください。たとえば `OP()->isCI() ? 1000 : posix_geteuid()` のようにします。その上で、`OP_CI`、`CI_AllMethods()`、split CI file layout を使って stable behavior を検査してください。
+
+空の `CI_AllMethods()` を返す対応は、一時的な橋渡しに限ります。望ましい最終設計は、process label、fallback value、generated setup command などの deterministic な guidance behavior を検査することです。
+
 `.phtml` ファイルにも PHPDoc を追加してください。
 
 `.phtml` ファイル内で使う変数には、Eclipse 互換の `/* @var $name type */` 形式で型ヒントを追加してください。PHTML template では PHPStan 形式の array shape は避けてください。

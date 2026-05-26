@@ -125,6 +125,18 @@ Do not add reusable module behavior to `function.php`. Put reusable behavior in 
 Use the ONEPIECE Framework split CI layout: `ci/Counter.php` is the loader called by CI, and each method has its own file under `ci/Counter/<Method>.php`.
 See `asset/docs/cicd/ci-file-layout.md` before adding or changing CI files.
 
+## CI Target Boundary
+
+`./cicd` treats visible `*.class.php` files in this module repository as class CI targets. The CI client scans the module root, resolves `CounterInitGuidance.class.php` as `OP\MODULE\COUNTER\CounterInitGuidance`, instantiates it, and then requires the object to use `OP_CI`.
+
+[DOC-ISSUE] The error `This object has not use OP_CI. (OP\MODULE\COUNTER\CounterInitGuidance)` happens because `CounterInitGuidance.class.php` is a lazy-loaded initialization-error helper, but its filename and location still match the CI class target pattern. Future agents must not add non-CI helper classes as visible `*.class.php` files in the module root unless those classes also implement the class CI contract.
+
+For this module, `CounterInitGuidance.class.php` should be treated as a CI target because refactoring can break its guidance behavior. Preserve the memory-saving goal by lazy-loading the file only after initialization fails, but make the class itself comply with CI.
+
+Do not use an external stub as the first choice. ONEPIECE Framework already provides `OP()->isCI()` for deterministic CI behavior. Split environment-dependent reads into small methods and return fixed values during CI, for example `OP()->isCI() ? 1000 : posix_geteuid()`. Then inspect the stable behavior through `OP_CI`, `CI_AllMethods()`, and the split CI file layout.
+
+Returning an empty `CI_AllMethods()` is only a temporary bridge. The intended final design is to test deterministic guidance behavior such as process labels, fallback values, and generated setup commands.
+
 Add PHPDoc to `.phtml` files.
 
 Add Eclipse-compatible `/* @var $name type */` type hints for variables used inside `.phtml` files. Avoid PHPStan-style array shapes in PHTML templates.
