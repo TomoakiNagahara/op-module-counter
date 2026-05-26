@@ -32,6 +32,26 @@ namespace OP\MODULE\COUNTER;
  */
 class CounterInitGuidance
 {
+	use \OP\OP_CI;
+
+	/**	Return the deterministic methods inspected by module CI.
+	 *
+	 * @return array
+	 */
+	function CI_AllMethods() : array
+	{
+		return [
+			'BuildChownCommand',
+			'GetGroupNameByGid',
+			'GetPosixGid',
+			'GetPosixUid',
+			'GetUserNameByUid',
+			'Label',
+			'PhpProcessOwner',
+			'ShellCommand',
+		];
+	}
+
 	/**	Display recovery guidance for asset/db/.
 	 *
 	 * @param  array $issues
@@ -40,10 +60,7 @@ class CounterInitGuidance
 	function DisplayInitGuidance(array $issues) : void
 	{
 		$process = $this->PhpProcessOwner();
-		$user    = $process['user'];
-		$group   = $process['group'];
-		$owner   = ($user and $group) ? "{$user}:{$group}" : null;
-		$chown   = $owner ? "chown -R {$owner} asset/db" : 'chown -R <php-user>:<php-group> asset/db';
+		$chown   = $this->BuildChownCommand($process);
 
 		OP()->Template('init.phtml', [
 			'issues'  => $issues,
@@ -58,21 +75,11 @@ class CounterInitGuidance
 	 */
 	private function PhpProcessOwner() : array
 	{
-		$uid = \function_exists('posix_geteuid') ? \posix_geteuid() : null;
-		$gid = \function_exists('posix_getegid') ? \posix_getegid() : null;
+		$uid = $this->GetPosixUid();
+		$gid = $this->GetPosixGid();
 
-		$user  = null;
-		$group = null;
-
-		if( $uid !== null and \function_exists('posix_getpwuid') ){
-			$info = \posix_getpwuid($uid);
-			$user = $info['name'] ?? null;
-		}
-
-		if( $gid !== null and \function_exists('posix_getgrgid') ){
-			$info = \posix_getgrgid($gid);
-			$group = $info['name'] ?? null;
-		}
+		$user  = $this->GetUserNameByUid($uid);
+		$group = $this->GetGroupNameByGid($gid);
 
 		if(!$user ){
 			$user = $this->ShellCommand('id -un');
@@ -90,6 +97,72 @@ class CounterInitGuidance
 		];
 	}
 
+	/**	Return the effective POSIX uid.
+	 *
+	 * @return int|null
+	 */
+	private function GetPosixUid() : ?int
+	{
+		if( OP()->isCI() ){
+			return 1000;
+		}
+
+		return \function_exists('posix_geteuid') ? \posix_geteuid() : null;
+	}
+
+	/**	Return the effective POSIX gid.
+	 *
+	 * @return int|null
+	 */
+	private function GetPosixGid() : ?int
+	{
+		if( OP()->isCI() ){
+			return 1000;
+		}
+
+		return \function_exists('posix_getegid') ? \posix_getegid() : null;
+	}
+
+	/**	Return a user name for a uid.
+	 *
+	 * @param  int|null $uid
+	 * @return string|null
+	 */
+	private function GetUserNameByUid(?int $uid) : ?string
+	{
+		if( OP()->isCI() ){
+			return $uid === 1000 ? 'ci-user' : null;
+		}
+
+		if( $uid === null or !\function_exists('posix_getpwuid') ){
+			return null;
+		}
+
+		$info = \posix_getpwuid($uid);
+
+		return $info['name'] ?? null;
+	}
+
+	/**	Return a group name for a gid.
+	 *
+	 * @param  int|null $gid
+	 * @return string|null
+	 */
+	private function GetGroupNameByGid(?int $gid) : ?string
+	{
+		if( OP()->isCI() ){
+			return $gid === 1000 ? 'ci-group' : null;
+		}
+
+		if( $gid === null or !\function_exists('posix_getgrgid') ){
+			return null;
+		}
+
+		$info = \posix_getgrgid($gid);
+
+		return $info['name'] ?? null;
+	}
+
 	/**	Return a shell command result if shell execution is available.
 	 *
 	 * @param  string $command
@@ -97,6 +170,14 @@ class CounterInitGuidance
 	 */
 	private function ShellCommand(string $command) : ?string
 	{
+		if( OP()->isCI() ){
+			return match($command){
+				'id -un' => 'ci-shell-user',
+				'id -gn' => 'ci-shell-group',
+				default  => null,
+			};
+		}
+
 		if(!\function_exists('shell_exec') ){
 			return null;
 		}
@@ -110,6 +191,20 @@ class CounterInitGuidance
 		$result = \is_string($result) ? \trim($result) : '';
 
 		return $result !== '' ? $result : null;
+	}
+
+	/**	Build the chown command shown to the site operator.
+	 *
+	 * @param  array $process
+	 * @return string
+	 */
+	private function BuildChownCommand(array $process) : string
+	{
+		$user  = $process['user']  ?? null;
+		$group = $process['group'] ?? null;
+		$owner = ($user and $group) ? "{$user}:{$group}" : null;
+
+		return $owner ? "chown -R {$owner} asset/db" : 'chown -R <php-user>:<php-group> asset/db';
 	}
 
 	/**	Return a user or group display label.
