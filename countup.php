@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/save.php
+/**	op-module-counter:/countup.php
  *
  * @created   2026-05-16
  * @license   Apache-2.0
@@ -23,10 +23,8 @@ if(!$initialized ){
 	return false;
 }
 
-$counter = new MODULE\Counter();
+require_once __DIR__ . '/Countup.class.php';
 
-if(!$counter->ShouldCount() ){
-	return false;
-}
+$countup = new MODULE\COUNTER\Countup();
 
-return $counter->Increment();
+return $countup->Increment();
