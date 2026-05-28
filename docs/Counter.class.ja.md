@@ -21,7 +21,7 @@ entry file は分離したままです。
 - display values の file read
 
 initialization recovery guidance は、この class には置きません。
-initialization に失敗した場合だけ、`Counter::Init()` が `CounterInitGuidance.class.php` を on demand で読み込み、guidance rendering を委譲します。
+initialization に失敗した場合だけ、`Counter::Init()` が `InitGuidance.class.php` を on demand で読み込み、guidance rendering を委譲します。
 これにより、通常の counter request では、ほとんど使われない error-handling code を memory に展開しません。
 
 `ci/Counter.php` は対応する CI loader です。

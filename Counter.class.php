@@ -55,8 +55,8 @@ class Counter
 		$issues = $this->InitIssues();
 
 		if( $issues ){
-			require_once(__DIR__ . '/CounterInitGuidance.class.php');
-			(new COUNTER\CounterInitGuidance())->DisplayInitGuidance($issues);
+			require_once(__DIR__ . '/InitGuidance.class.php');
+			(new COUNTER\InitGuidance())->DisplayInitGuidance($issues);
 			return false;
 		}
 

@@ -21,7 +21,7 @@ The class maintains:
 - file reads for display values
 
 Initialization recovery guidance is not kept in this class.
-When initialization fails, `Counter::Init()` loads `CounterInitGuidance.class.php` on demand and delegates the guidance rendering to it.
+When initialization fails, `Counter::Init()` loads `InitGuidance.class.php` on demand and delegates the guidance rendering to it.
 This keeps rarely used error-handling code out of memory during normal counter requests.
 
 `ci/Counter.php` is the matching CI loader.
