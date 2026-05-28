@@ -23,6 +23,8 @@ if(!$initialized ){
 	return false;
 }
 
+require_once __DIR__ . '/Counter.class.php';
+
 $counter = new MODULE\Counter();
 $counts  = $counter->Counts();
 
