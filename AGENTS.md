@@ -14,10 +14,13 @@ If the original Japanese dictation matters, read `docs/dictation.ja.md`.
 ## Module Documents
 
 - Overview and usage: `README.md`
+- Shared helpers: `docs/Common.class.md`
 - Counter behavior: `docs/Counter.class.md`
+- Countup behavior: `docs/Countup.class.md`
 - Initialization: `docs/init.md`
+- Initialization class: `docs/Init.class.md`
 - Initialization guidance helper: `docs/InitGuidance.class.md`
-- Save entry: `docs/save.md`
+- Countup entry: `docs/countup.md`
 - View entry: `docs/view.md`
 - Calendar entry: `docs/calendar.md`
 - Calendar helper: `docs/Calendar.class.md`

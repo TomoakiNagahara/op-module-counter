@@ -14,10 +14,13 @@ user の最新の口頭または chat 指示がそこに要約されている可
 ## module documents
 
 - overview and usage: `README.md`
+- shared helpers: `docs/Common.class.md`
 - counter behavior: `docs/Counter.class.md`
+- countup behavior: `docs/Countup.class.md`
 - initialization: `docs/init.md`
+- initialization class: `docs/Init.class.md`
 - initialization guidance helper: `docs/InitGuidance.class.md`
-- save entry: `docs/save.md`
+- countup entry: `docs/countup.md`
 - view entry: `docs/view.md`
 - calendar entry: `docs/calendar.md`
 - calendar helper: `docs/Calendar.class.md`
