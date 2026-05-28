@@ -21,8 +21,6 @@ namespace OP;
 /**	include
  *
  */
-require_once __DIR__ . '/Counter.class.php';
+require_once __DIR__ . '/Init.class.php';
 
-$counter = new MODULE\Counter();
-
-return $counter->Init();
+return (new MODULE\COUNTER\Init())->Init();
