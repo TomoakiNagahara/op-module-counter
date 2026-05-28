@@ -1,7 +1,7 @@
 <?php
-/**	op-module-counter:/ci/Counter/NormalizeDomain.php
+/**	op-module-counter:/ci/Common/NormalizeDomain.php
  *
- * @created   2026-05-21
+ * @created   2026-05-28
  * @license   Apache-2.0
  * @package   op-module-counter
  * @author    Codex CLI
