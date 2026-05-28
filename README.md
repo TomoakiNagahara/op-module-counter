@@ -43,7 +43,7 @@ The yearly, monthly, and total files are updated at save time so display does no
 `init.php` is a thin entry file that calls `Counter.class.php`.
 `Counter.class.php` checks whether `asset/db/` exists, is a directory, and is writable by PHP.
 If the storage is not ready, it displays recovery steps instead of reading or writing counter files.
-The recovery guidance is split into `CounterInitGuidance.class.php` and is loaded only after initialization fails.
+The recovery guidance is split into `InitGuidance.class.php` and is loaded only after initialization fails.
 
 ## Implementation
 
