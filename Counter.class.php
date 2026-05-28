@@ -18,6 +18,11 @@ declare(strict_types=1);
  */
 namespace OP\MODULE;
 
+/**	include
+ *
+ */
+require_once __DIR__ . '/Common.class.php';
+
 /**	Counter
  *
  * @created   2026-05-21
@@ -42,25 +47,7 @@ class Counter
 	{
 		return [
 			'IsOne',
-			'NormalizeDomain',
 		];
-	}
-
-	/**	Check whether the counter can use asset/db/.
-	 *
-	 * @return bool
-	 */
-	function Init() : bool
-	{
-		$issues = $this->InitIssues();
-
-		if( $issues ){
-			require_once(__DIR__ . '/InitGuidance.class.php');
-			(new COUNTER\InitGuidance())->DisplayInitGuidance($issues);
-			return false;
-		}
-
-		return true;
 	}
 
 	/**	Return whether the current request should increment the counter.
@@ -136,24 +123,6 @@ class Counter
 		return false;
 	}
 
-	/**	Normalize a host name into a storage-safe domain key.
-	 *
-	 * @param  string|null $host
-	 * @return string
-	 */
-	function NormalizeDomain(?string $host) : string
-	{
-		$host = $host ?: 'localhost';
-		$host = trim(explode(',', $host)[0]);
-		$host = preg_replace('/:\d+$/', '', $host);
-		$host = strtolower($host);
-
-		$domain = preg_replace('/[^a-z0-9._-]/', '_', $host);
-		$domain = trim($domain, '._-');
-
-		return $domain ?: 'unknown-host';
-	}
-
 	/**	Return whether admin access should be skipped.
 	 *
 	 * @return bool
@@ -185,33 +154,15 @@ class Counter
 		return is_file(OP()->Path('asset:/config/counter.php')) or is_file(OP()->Path('asset:/config/_counter.php'));
 	}
 
-	/**	Return the current counter target domain.
+	/**	Return shared counter helpers.
 	 *
-	 * @return string
+	 * @return COUNTER\Common
 	 */
-	private function Domain() : string
+	private function Common() : COUNTER\Common
 	{
-		$host = $_SERVER['SERVER_NAME'] ?? 'localhost';
+		static $common;
 
-		return $this->NormalizeDomain($host);
-	}
-
-	/**	Return the counter storage root.
-	 *
-	 * @return string
-	 */
-	private function StorageRoot() : string
-	{
-		return $this->DbRoot() . 'counter/' . $this->Domain() . '/';
-	}
-
-	/**	Return the database storage root.
-	 *
-	 * @return string
-	 */
-	private function DbRoot() : string
-	{
-		return OP()->Path('asset:/db/');
+		return $common ??= new COUNTER\Common();
 	}
 
 	/**	Return counter file paths for a date.
@@ -221,7 +172,7 @@ class Counter
 	 */
 	private function Paths(\DateTimeImmutable $date) : array
 	{
-		$root  = $this->StorageRoot();
+		$root  = $this->Common()->StorageRoot();
 		$year  = $date->format('Y');
 		$month = $date->format('m');
 		$day   = $date->format('d');
@@ -232,32 +183,6 @@ class Counter
 			'month' => $root . $year . '/' . $month . '/total.txt',
 			'day'   => $root . $year . '/' . $month . '/' . $day . '.txt',
 		];
-	}
-
-	/**	Return initialization issues.
-	 *
-	 * @return array
-	 */
-	private function InitIssues() : array
-	{
-		$issues = [];
-		$db_root = $this->DbRoot();
-
-		if(!file_exists($db_root) ){
-			$issues[] = '`asset/db/` does not exist.';
-			return $issues;
-		}
-
-		if(!is_dir($db_root) ){
-			$issues[] = '`asset/db/` exists but is not a directory.';
-			return $issues;
-		}
-
-		if(!is_writable($db_root) ){
-			$issues[] = '`asset/db/` is not writable by the current PHP process.';
-		}
-
-		return $issues;
 	}
 
 	/**	Increment one counter file with an exclusive lock.
