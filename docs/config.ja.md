@@ -45,11 +45,12 @@ default:
 template では `null` ではなく明示的な `admin` value を使います。
 これは、third-party user が documentation を読んだり AI assistant に尋ねたりしなくても、`config.php` を見るだけで設定可能な値を理解できるようにするためです。
 
-`skip` が `admin` の場合、`Counter::ShouldCount()` は `OP()->isAdmin()` をチェックします。
+`skip` が `admin` の場合、`Countup::Increment()` は `OP()->isAdmin()` をチェックします。
 `OP()->isAdmin()` が `true` なら、counter は加算を skip します。
-admin request を skip した場合、counter は常に `D()` debug message を出します。
+admin request を skip した場合、counter は `D()` debug message を出しません。
 
-`skip` が `admin` ではない場合、全ての request をカウントします。
+`skip` が `admin` ではない場合、admin skip rule は無効です。
+session duplicate-count guard は引き続き適用されるため、同一 session 内では最初の eligible access だけが counter を加算します。
 
 application config の例:
 

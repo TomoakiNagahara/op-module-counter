@@ -44,11 +44,12 @@ Default:
 
 The template uses the explicit value `admin` instead of `null` so third-party users can see the available setting directly from `config.php` without first reading documentation or asking an AI assistant.
 
-When `skip` is `admin`, `Counter::ShouldCount()` checks `OP()->isAdmin()`.
+When `skip` is `admin`, `Countup::Increment()` checks `OP()->isAdmin()`.
 If `OP()->isAdmin()` is `true`, the counter skips incrementing.
-When an admin request is skipped, the counter always outputs a `D()` debug message.
+When an admin request is skipped, the counter does not output a `D()` debug message.
 
-When `skip` is not `admin`, every request is counted.
+When `skip` is not `admin`, the admin skip rule is disabled.
+The session duplicate-count guard still applies, so only the first eligible access in the same session increments the counter.
 
 Example application config:
 
