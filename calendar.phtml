@@ -1,0 +1,116 @@
+<?php
+/**	op-module-counter:/calendar.phtml
+ *
+ * @created   2026-05-28
+ * @license   Apache-2.0
+ * @package   op-module-counter
+ * @author    Codex CLI
+ * @copyright (C) 2026 Tomoaki Nagahara
+ */
+
+/* @var $calendar array */
+?>
+<style>
+.op-module-counter-calendar {
+	inline-size: min(100%, 42rem);
+}
+.op-module-counter-calendar-header {
+	display: grid;
+	grid-template-columns: 2.5rem 1fr 2.5rem;
+	align-items: center;
+	margin-block-end: 0.5rem;
+}
+.op-module-counter-calendar-title {
+	font-weight: 700;
+	text-align: center;
+}
+.op-module-counter-calendar-nav {
+	text-align: center;
+	text-decoration: none;
+}
+.op-module-counter-calendar-table {
+	border-collapse: collapse;
+	inline-size: 100%;
+	table-layout: fixed;
+}
+.op-module-counter-calendar-table th,
+.op-module-counter-calendar-table td {
+	border: 1px solid #d6d6d6;
+	padding: 0.35rem;
+	vertical-align: top;
+}
+.op-module-counter-calendar-table th {
+	background: #f2f4f6;
+	font-weight: 700;
+	text-align: center;
+}
+.op-module-counter-calendar-table td {
+	block-size: 4.25rem;
+}
+.op-module-counter-calendar-empty {
+	background: #fafafa;
+}
+.op-module-counter-calendar-day {
+	text-align: left;
+}
+.op-module-counter-calendar-date {
+	font-weight: 700;
+}
+.op-module-counter-calendar-table td:first-child .op-module-counter-calendar-date {
+	color: #c62828;
+}
+.op-module-counter-calendar-table td:last-child .op-module-counter-calendar-date {
+	color: #1565c0;
+}
+.op-module-counter-calendar-count {
+	margin-block-start: 0.5rem;
+	text-align: right;
+}
+.op-module-counter-calendar-count-zero {
+	color: #c8c8c8;
+}
+.op-module-counter-calendar-today {
+	outline: 2px solid #555;
+	outline-offset: -2px;
+}
+</style>
+<div class="op-module-counter-calendar">
+	<div class="op-module-counter-calendar-header">
+		<a class="op-module-counter-calendar-nav" href="?counter_year=<?= $calendar['previous']['year'] ?>&amp;counter_month=<?= $calendar['previous']['month'] ?>" aria-label="Previous month">&lt;</a>
+		<div class="op-module-counter-calendar-title"><?= htmlspecialchars($calendar['label'], ENT_QUOTES, 'UTF-8') ?></div>
+		<a class="op-module-counter-calendar-nav" href="?counter_year=<?= $calendar['next']['year'] ?>&amp;counter_month=<?= $calendar['next']['month'] ?>" aria-label="Next month">&gt;</a>
+	</div>
+	<table class="op-module-counter-calendar-table">
+		<thead>
+			<tr>
+				<th scope="col">Sun</th>
+				<th scope="col">Mon</th>
+				<th scope="col">Tue</th>
+				<th scope="col">Wed</th>
+				<th scope="col">Thu</th>
+				<th scope="col">Fri</th>
+				<th scope="col">Sat</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach( $calendar['weeks'] as $week ): ?>
+			<?php /* @var $week array */ ?>
+			<tr>
+				<?php foreach( $week as $day ): ?>
+					<?php /* @var $day array|null */ ?>
+					<?php if( $day === null ): ?>
+					<td class="op-module-counter-calendar-empty"></td>
+					<?php else: ?>
+					<td class="<?= $day['is_today'] ? 'op-module-counter-calendar-today' : '' ?>" data-date="<?= $day['date'] ?>">
+						<div class="op-module-counter-calendar-day">
+							<time class="op-module-counter-calendar-date" datetime="<?= $day['date'] ?>" aria-label="<?= htmlspecialchars($day['date'], ENT_QUOTES, 'UTF-8') ?>"><?= $day['day'] ?></time>
+						</div>
+						<div class="op-module-counter-calendar-count <?= $day['count'] === 0 ? 'op-module-counter-calendar-count-zero' : '' ?>"><?= number_format($day['count']) ?></div>
+					</td>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+</div>
