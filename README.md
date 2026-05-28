@@ -16,6 +16,12 @@ Call `view.php` from the top page to display the counter:
 <?php OP()->Template('asset:/module/counter/view.php') ?>
 ```
 
+Call `calendar.php` to display daily counts in a monthly calendar:
+
+```php
+<?php OP()->Template('asset:/module/counter/calendar.php') ?>
+```
+
 ## Storage
 
 The counter does not use a database.
