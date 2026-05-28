@@ -24,6 +24,9 @@ initialization logic は、この class には置きません。
 `init.php` は `Init.class.php` を呼び出し、`Init.class.php` が initialization 失敗後にだけ `InitGuidance.class.php` を読み込みます。
 これにより、counter runtime behavior と initialization recovery behavior を分離します。
 
+calendar display logic も、この class には置きません。
+`calendar.php` が、calendar display を要求された時だけ `Calendar.class.php` を読み込みます。多くの site では calendar feature をまったく使わない可能性があるためです。
+
 `ci/Counter.php` は対応する CI loader です。
 各 deterministic method の CI configuration は `ci/Counter/` の下に method ごとの file として置きます。
 `CI_AllMethods()` は、`IsOne()` のような deterministic helper method だけを意図的に列挙します。
