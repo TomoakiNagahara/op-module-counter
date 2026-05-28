@@ -19,6 +19,7 @@ The original Japanese dictation is stored in `dictation.ja.md`.
 - The counter module default config template is `asset/module/counter/config.php`; users copy it to `asset/config/counter.php`.
 - Do not automatically load module-side `config.php`.
 - Keep optional calendar-display logic out of normal `save.php` and `view.php` requests.
+- Initialization guidance logic belongs in `OP\MODULE\COUNTER\InitGuidance` in `InitGuidance.class.php`; do not use the redundant `CounterInitGuidance` class or file name.
 - Calendar logic belongs in `OP\MODULE\COUNTER\Calendar` in `Calendar.class.php`.
 - `calendar.php` should lazy-load `Calendar.class.php` with `__DIR__ . '/Calendar.class.php'`.
 - `Calendar.class.php` owns package behavior and must remain visible to CI with `OP_CI`, `CI_AllMethods()`, `ci/Calendar.php`, and method-level CI files.

@@ -32,6 +32,7 @@
  * `asset/db/` のパーミッションが適切かチェックして、不適切ならどうすればいいか、ユーザーに手順を教えてあげて欲しい。
  * チェックは `init.php` にまとめて。それを `save.php` と `view.php` から呼び出す形式にしたい。
  * `DisplayInitGuidance()`、`PhpProcessOwner()`、`ShellCommand()` は初期化エラー時だけ必要なので、`Counter.class.php` ではなく別クラスに分離する。
+ * initialization guidance の class name は、`OP\MODULE\COUNTER\CounterInitGuidance` では冗長なので、`OP\MODULE\COUNTER\InitGuidance` にする。file name も `InitGuidance.class.php` にする。
  * ONEPIECE Framework ではメモリーの無駄使いは禁忌なので、不要な処理を通常 request の memory に展開しない。
  * module の main class は `OP\MODULE` に置くが、sub class は他 module と衝突しないように module 名の subnamespace に隔離する。counter module の sub class は `OP\MODULE\COUNTER` に置く。
 
