@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/CounterInitGuidance.class.php
+/**	op-module-counter:/InitGuidance.class.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -18,7 +18,7 @@ declare(strict_types=1);
  */
 namespace OP\MODULE\COUNTER;
 
-/**	CounterInitGuidance
+/**	InitGuidance
  *
  * This class is loaded only when counter initialization fails.
  * Keeping recovery guidance outside Counter avoids loading rarely used
@@ -30,7 +30,7 @@ namespace OP\MODULE\COUNTER;
  * @author    Codex CLI
  * @copyright (C) 2026 Tomoaki Nagahara
  */
-class CounterInitGuidance
+class InitGuidance
 {
 	use \OP\OP_CI;
 

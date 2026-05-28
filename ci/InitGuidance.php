@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance.php
+/**	op-module-counter:/ci/InitGuidance.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0

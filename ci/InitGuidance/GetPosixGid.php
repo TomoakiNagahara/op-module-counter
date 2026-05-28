@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/GetGroupNameByGid.php
+/**	op-module-counter:/ci/InitGuidance/GetPosixGid.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -23,10 +23,6 @@ $method = explode('.', $method)[0];
 
 /* @var $ci \OP\UNIT\CI\CI_Config */
 
-$args   = [1000];
-$result = 'ci-group';
-$ci->Set($method, $result, $args);
-
-$args   = [1001];
-$result = null;
+$args   = null;
+$result = 1000;
 $ci->Set($method, $result, $args);

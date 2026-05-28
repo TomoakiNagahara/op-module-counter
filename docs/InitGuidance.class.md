@@ -1,6 +1,6 @@
-# CounterInitGuidance.class.php
+# InitGuidance.class.php
 
-`CounterInitGuidance.class.php` owns initialization failure guidance for the counter module.
+`InitGuidance.class.php` owns initialization failure guidance for the counter module.
 
 It is intentionally separate from `Counter.class.php`.
 Normal counter requests should not load recovery logic that is used only when `asset/db/` is missing, not a directory, or not writable.
@@ -9,7 +9,7 @@ The class uses the `OP\MODULE\COUNTER` namespace.
 The counter main class is exposed as `OP\MODULE\Counter`, but helper classes stay inside the module subnamespace to avoid collisions with other MODULE classes.
 
 ONEPIECE Framework treats unnecessary memory use as forbidden.
-For that reason, `Counter::Init()` loads this class only after initialization issues are found.
+For that reason, `Init.class.php` loads this class only after initialization issues are found.
 
 The class handles:
 

@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/GetPosixGid.php
+/**	op-module-counter:/ci/InitGuidance/GetPosixUid.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0

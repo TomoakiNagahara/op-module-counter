@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/Label.php
+/**	op-module-counter:/ci/InitGuidance/GetUserNameByUid.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -23,14 +23,10 @@ $method = explode('.', $method)[0];
 
 /* @var $ci \OP\UNIT\CI\CI_Config */
 
-$args   = ['ci-user', 'uid', 1000];
-$result = 'ci-user (uid: 1000)';
-$ci->Set($method, $result, $args);
-
-$args   = ['ci-user', 'uid', null];
+$args   = [1000];
 $result = 'ci-user';
 $ci->Set($method, $result, $args);
 
-$args   = [null, 'uid', 1000];
-$result = 'unknown';
+$args   = [1001];
+$result = null;
 $ci->Set($method, $result, $args);

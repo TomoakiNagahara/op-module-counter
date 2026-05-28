@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/ShellCommand.php
+/**	op-module-counter:/ci/InitGuidance/Label.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -23,14 +23,14 @@ $method = explode('.', $method)[0];
 
 /* @var $ci \OP\UNIT\CI\CI_Config */
 
-$args   = ['id -un'];
-$result = 'ci-shell-user';
+$args   = ['ci-user', 'uid', 1000];
+$result = 'ci-user (uid: 1000)';
 $ci->Set($method, $result, $args);
 
-$args   = ['id -gn'];
-$result = 'ci-shell-group';
+$args   = ['ci-user', 'uid', null];
+$result = 'ci-user';
 $ci->Set($method, $result, $args);
 
-$args   = ['unknown'];
-$result = null;
+$args   = [null, 'uid', 1000];
+$result = 'unknown';
 $ci->Set($method, $result, $args);

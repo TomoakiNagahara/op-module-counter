@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/BuildChownCommand.php
+/**	op-module-counter:/ci/InitGuidance/GetGroupNameByGid.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -23,16 +23,10 @@ $method = explode('.', $method)[0];
 
 /* @var $ci \OP\UNIT\CI\CI_Config */
 
-$args   = [[
-	'user'  => 'ci-user',
-	'group' => 'ci-group',
-]];
-$result = 'chown -R ci-user:ci-group asset/db';
+$args   = [1000];
+$result = 'ci-group';
 $ci->Set($method, $result, $args);
 
-$args   = [[
-	'user'  => null,
-	'group' => 'ci-group',
-]];
-$result = 'chown -R <php-user>:<php-group> asset/db';
+$args   = [1001];
+$result = null;
 $ci->Set($method, $result, $args);

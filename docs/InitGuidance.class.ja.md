@@ -1,6 +1,6 @@
-# CounterInitGuidance.class.php
+# InitGuidance.class.php
 
-`CounterInitGuidance.class.php` は、counter module の initialization failure guidance を所有します。
+`InitGuidance.class.php` は、counter module の initialization failure guidance を所有します。
 
 この class は意図的に `Counter.class.php` から分離しています。
 通常の counter request では、`asset/db/` が存在しない、directory ではない、または writable ではない場合だけ使う recovery logic を読み込むべきではありません。
@@ -9,7 +9,7 @@
 counter の main class は `OP\MODULE\Counter` として展開されますが、helper class は他の MODULE class と衝突しないように module subnamespace に置きます。
 
 ONEPIECE Framework では不要な memory use は禁忌です。
-そのため、`Counter::Init()` は initialization issue が見つかった後にだけ、この class を読み込みます。
+そのため、`Init.class.php` は initialization issue が見つかった後にだけ、この class を読み込みます。
 
 この class は次を扱います。
 

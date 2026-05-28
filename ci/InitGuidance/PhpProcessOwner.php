@@ -1,5 +1,5 @@
 <?php
-/**	op-module-counter:/ci/CounterInitGuidance/GetUserNameByUid.php
+/**	op-module-counter:/ci/InitGuidance/PhpProcessOwner.php
  *
  * @created   2026-05-26
  * @license   Apache-2.0
@@ -23,10 +23,11 @@ $method = explode('.', $method)[0];
 
 /* @var $ci \OP\UNIT\CI\CI_Config */
 
-$args   = [1000];
-$result = 'ci-user';
-$ci->Set($method, $result, $args);
-
-$args   = [1001];
-$result = null;
+$args   = null;
+$result = [
+	'user'        => 'ci-user',
+	'group'       => 'ci-group',
+	'user_label'  => 'ci-user (uid: 1000)',
+	'group_label' => 'ci-group (gid: 1000)',
+];
 $ci->Set($method, $result, $args);
