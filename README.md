@@ -4,10 +4,10 @@ This module provides a file-based access counter.
 
 ## Usage
 
-Call `save.php` from the top page to increment the counter:
+Call `countup.php` from the top page to increment the counter:
 
 ```php
-<?php OP()->Template('asset:/module/counter/save.php') ?>
+<?php OP()->Template('asset:/module/counter/countup.php') ?>
 ```
 
 Call `view.php` from the top page to display the counter:
@@ -38,7 +38,7 @@ The yearly, monthly, and total files are updated at save time so display does no
 
 ## Initialization
 
-`save.php` and `view.php` call `init.php` before reading or writing counter files.
+`countup.php` and `view.php` call `init.php` before reading or writing counter files.
 
 `init.php` is a thin entry file that calls `Init.class.php`.
 `Init.class.php` checks whether `asset/db/` exists, is a directory, and is writable by PHP.
@@ -48,7 +48,8 @@ The recovery guidance is split into `InitGuidance.class.php` and is loaded only 
 ## Implementation
 
 Reusable module logic is implemented in class files so ONEPIECE Framework CI can inspect them.
-The main counter behavior is in `Counter.class.php`.
+Display behavior is in `Counter.class.php`.
+Countup behavior is in `Countup.class.php`.
 Initialization behavior is in `Init.class.php`.
 Shared path and domain helpers are in `Common.class.php`.
 Each class has a matching CI loader under `ci/`.
