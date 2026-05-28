@@ -1,55 +1,27 @@
-アクセスカウンターをAIに作って貰う
-===
+# Counter Dictation For Agents
 
-# アクセスカウンターの仕組み
+## Purpose
 
-## 前提
- * 保存と表示は別のファイルにする
- * データベースは使わず、テキストファイルに保存する
- * ソースコードは全て英語で作成する
- * ソースコードのコメントは全て英語で作成する
- * エラーなど表示するメッセージは全て英語で作成する（後述の注意を参照）
- * HTMLのソースコードは、PHPのソースコード内に記述しない（メンテナンス性が落ちる）
- * HTMLのソースコードは、テンプレートファイルに分け `OP()->Template()` で呼び出す
- * テンプレートファイルの拡張子は `.phtml` にする
- * セキュリティを重視して下さい
+This file summarizes counter-module dictation notes for AI agents.
 
-### 注意
- * ONEPIECE Frameworkには、翻訳機能があるので、英語前提で作成し、ユーザーが必要な場合は翻訳機能を使えば良い
+The original Japanese dictation is stored in `dictation.ja.md`.
 
-### コーディングルール
- * PHPdocの `@author`を `Codex CLI` にする
- * 複数行コメントの開始の　`/**` の次はスペースではなくタブにすること
- * `OP()` はネームスペースなしでどこでも呼べるのでバックスラッシュは要らない
- * `function.php` では CI が行われないため、再利用する module logic は ONEPIECE Framework の class-based CI に従って `Counter.class.php` に置く
- * `Counter.class.php` は `OP_CI` を使い、対応する CI loader は `ci/Counter.php` に置く
- * CI config は、`ci/Counter.php` から同名フォルダを読み込み、各メソッド名のphpファイルを `ci/Counter/<Method>.php` に置く
- * CI file の汎用的な作法は `asset/docs/cicd/ci-file-layout.md` と `asset/docs/cicd/ci-file-layout.ja.md` に残す
- * `phtml` ファイル内にもPHPDocを追加して下さい。
- * `phtml` ファイル内の変数には、`/* @var */` を使って型ヒントを付ける
+## Current Guidance
 
-## 初期化
- * `asset/db/` のパーミッションが適切かチェックして、不適切ならどうすればいいか、ユーザーに手順を教えてあげて欲しい。
- * チェックは `init.php` にまとめて。それを `save.php` と `view.php` から呼び出す形式にしたい。
- * `DisplayInitGuidance()`、`PhpProcessOwner()`、`ShellCommand()` は初期化エラー時だけ必要なので、`Counter.class.php` ではなく別クラスに分離する。
- * ONEPIECE Framework ではメモリーの無駄使いは禁忌なので、不要な処理を通常 request の memory に展開しない。
- * module の main class は `OP\MODULE` に置くが、sub class は他 module と衝突しないように module 名の subnamespace に隔離する。counter module の sub class は `OP\MODULE\COUNTER` に置く。
-
-## 保存
- * topページからは、`<?php OP()->Template('asset:/module/counter/save.php') ?>`で呼び出すと、訪問毎に1ずつカウントアップされる。
- * データベースは使わず、テキストファイルに保存する。
- * テキストファイルの保存先は `asset/db/counter/（ドメイン名）/yyyy/mm/dd.txt` です。
- * ドメイン名は、自分のドメイン名です。これは、サブドメイン毎にアクセス回数を別に保存したいからです。
- * 原則、全てのアクセスをカウントする
- * `OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`OP()->isAdmin()` をチェックし、`true` ならカウントを skip する
- * admin access を skip した場合は、`D()` で debug message を出す
- * UNIT/MODULE の default config は、その UNIT/MODULE directory の `config.php` に置く
- * counter module の default config template は `asset/module/counter/config.php` に置く
- * module 側の `config.php` は自動的に読み込まれない
- * counter module の user-defined config は、user が `asset/module/counter/config.php` を `asset/config/counter.php` に copy して作る
-
-## 表示
- * topページからは `<?php OP()->Template('asset:/module/counter/view.php') ?>` で呼び出すと、訪問回数が表示される。
- * 表示は、今日と昨日と今月と今年とトータルでお願いします。
- * 計算しやすいように、各年と各月はtotal.txtに保存しておく。
- * 表示形式は `キー : 数値` の形式でお願いします。 ` : ` で中央揃えにして
+- Build the access counter without a database; store counts in text files.
+- Keep save, view, and calendar display as separate entry files.
+- Use English for source code, source comments, and runtime messages.
+- Keep HTML out of PHP logic files; render HTML through `.phtml` templates with `OP()->Template()`.
+- Store counter files under `asset/db/counter/<domain>/yyyy/mm/dd.txt`.
+- Use `SERVER_NAME` for the counter domain.
+- Count all accesses by default, but skip admin requests only when `OP()->Config('counter')['skip'] === 'admin'` and `OP()->isAdmin()` is true.
+- Emit a `D()` debug message whenever an admin request is skipped.
+- The counter module default config template is `asset/module/counter/config.php`; users copy it to `asset/config/counter.php`.
+- Do not automatically load module-side `config.php`.
+- Keep optional calendar-display logic out of normal `save.php` and `view.php` requests.
+- Calendar logic belongs in `OP\MODULE\COUNTER\Calendar` in `Calendar.class.php`.
+- `calendar.php` should lazy-load `Calendar.class.php` with `__DIR__ . '/Calendar.class.php'`.
+- `Calendar.class.php` owns package behavior and must remain visible to CI with `OP_CI`, `CI_AllMethods()`, `ci/Calendar.php`, and method-level CI files.
+- Calendar display reads only selected-month `dd.txt` files, does not increment counters, and does not scan unrelated months.
+- Calendar month selection uses `OP()->Request('counter_year')` and `OP()->Request('counter_month')`; missing or out-of-range values show the current month.
+- Sunday day numbers are red, Saturday day numbers are blue, and zero counts are light gray.
