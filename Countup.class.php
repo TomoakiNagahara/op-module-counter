@@ -35,7 +35,7 @@ require_once __DIR__ . '/Common.class.php';
  */
 class Countup
 {
-	use \OP\OP_CI;
+	use \OP\OP_CI, \OP\OP_SESSION;
 
 	/**	Return the deterministic methods inspected by module CI.
 	 *
@@ -52,8 +52,21 @@ class Countup
 	 */
 	function Increment() : bool
 	{
-		if( OP()->Session()->Get( $this->SessionKey() ) ){
+		$session = & self::Session();
+		$key     = $this->SessionKey();
+
+		if( !empty($session[$key]) ){
 			//	Already counted.
+			return true;
+		}
+
+		//	Skip simple bot-like access.
+		if(!$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? null ){
+			return true;
+		}
+
+		//	Skip common robot user agents.
+		if( preg_match('/bot|crawl|spider|slurp|curl|wget|python-requests/i', $user_agent) ){
 			return true;
 		}
 
@@ -69,7 +82,7 @@ class Countup
 		}
 
 		//	Set count marker.
-		OP()->Session()->Set($this->SessionKey(), true);
+		$session[$key] = true;
 
 		return true;
 	} // Increment
@@ -80,6 +93,7 @@ class Countup
 	 */
 	private function SessionKey() : string
 	{
+		//	Counter files are stored per domain, so the session marker must also be per domain.
 		return 'counter_counted_' . $this->Common()->Domain();
 	} // SessionKey
 

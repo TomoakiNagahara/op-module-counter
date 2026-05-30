@@ -14,7 +14,7 @@ The class handles:
 - writing counter files with `flock()`
 
 Admin skip configuration and counter paths come from `Common.class.php`.
-Session state is stored through `OP()->Session()` so the module does not use raw `$_SESSION`.
+Session state is stored through `OP_SESSION` and `self::Session()` so the module keeps the marker in its package-scoped session namespace and does not use raw `$_SESSION`.
 
 `Countup.class.php` is a visible module class file, so it must use `OP_CI`.
 Its runtime behavior depends on session state, request admin state, config, dates, and file storage, so it currently has no deterministic method-level CI target.

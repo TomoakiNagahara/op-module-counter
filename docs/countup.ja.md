@@ -16,6 +16,7 @@
 標準では、session 内の最初の eligible access をカウントします。
 countup が成功した後、module は current counter domain を framework session に記録します。
 同一 session 内の以後の access は、counter を再加算しません。
+User-Agent が空、または common robot-like User-Agent pattern に一致する access は、counter file を更新する前に skip します。
 `OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`Countup::Increment()` は `OP()->isAdmin()` をチェックします。
 その config value が設定され、かつ `OP()->isAdmin()` が `true` の場合、counter は加算を skip します。
 管理者リクエストを skip した場合、counter は `D()` debug message を出しません。

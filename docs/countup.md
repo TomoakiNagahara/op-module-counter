@@ -16,6 +16,7 @@ This entry does not load `Counter.class.php`.
 By default, the first eligible access in a session is counted.
 After a successful countup, the module records the current counter domain in the framework session.
 Further accesses in the same session do not increment the counter again.
+Access with an empty User-Agent or a common robot-like User-Agent pattern is skipped before counter files are updated.
 Only when `OP()->Config('counter')['skip'] === 'admin'`, `Countup::Increment()` checks `OP()->isAdmin()`.
 If that config value is set and `OP()->isAdmin()` is `true`, the counter skips incrementing.
 When an admin request is skipped, the counter does not output a `D()` debug message.
