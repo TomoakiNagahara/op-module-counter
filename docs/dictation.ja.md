@@ -42,7 +42,7 @@
  * `save.php` は `countup.php` に rename する。
  * countup request では `Counter.class.php` を読み込まない。
  * `Countup::Increment()` は `bool` を返す。`countup.php` は success / failure だけ分かればよいので、使わない count array を作らない。
- * countup が成功したら framework session に記録し、同一 session 内の以後の access は countup しない。
+ * countup が成功したら `OP_SESSION` / `self::Session()` で module-scoped session namespace に記録し、同一 session 内の以後の access は countup しない。
  * データベースは使わず、テキストファイルに保存する。
  * テキストファイルの保存先は `asset/db/counter/（ドメイン名）/yyyy/mm/dd.txt` です。
  * ドメイン名は、自分のドメイン名です。これは、サブドメイン毎にアクセス回数を別に保存したいからです。
@@ -50,6 +50,7 @@
  * 原則、eligible access をカウントする
  * `OP()->Config('counter')['skip'] === 'admin'` の場合だけ、`OP()->isAdmin()` をチェックし、`true` ならカウントを skip する
  * admin access を skip した場合、`D()` debug message は出さない
+ * User-Agent が空、または common robot-like User-Agent pattern に一致する access は、`Countup::Increment()` 内で file update 前に skip する
  * UNIT/MODULE の default config は、その UNIT/MODULE directory の `config.php` に置く
  * counter module の default config template は `asset/module/counter/config.php` に置く
  * module 側の `config.php` は自動的に読み込まれない

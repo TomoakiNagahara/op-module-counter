@@ -18,11 +18,12 @@ The original Japanese dictation is stored in `dictation.ja.md`.
 - Shared helpers such as `DbRoot()`, storage root, domain lookup, and domain normalization belong in `OP\MODULE\COUNTER\Common` in `Common.class.php`.
 - Count eligible accesses by default, but skip admin requests only when `OP()->Config('counter')['skip'] === 'admin'` and `OP()->isAdmin()` is true.
 - Admin skip does not emit a `D()` debug message.
+- Skip access with an empty User-Agent or common robot-like User-Agent patterns inside `Countup::Increment()` before file updates.
 - The counter module default config template is `asset/module/counter/config.php`; users copy it to `asset/config/counter.php`.
 - Do not automatically load module-side `config.php`.
 - Countup behavior belongs in `OP\MODULE\COUNTER\Countup` in `Countup.class.php`; `countup.php` should not load `Counter.class.php`.
 - `Countup::Increment()` returns `bool`; do not build an unused count array because `countup.php` only needs success or failure.
-- A successful countup is recorded in the framework session, and further accesses in the same session must not increment the counter again.
+- A successful countup is recorded with `OP_SESSION` / `self::Session()` in the module-scoped session namespace, and further accesses in the same session must not increment the counter again.
 - Keep optional calendar-display logic out of normal `countup.php` and `view.php` requests.
 - Initialization guidance logic belongs in `OP\MODULE\COUNTER\InitGuidance` in `InitGuidance.class.php`; do not use the redundant `CounterInitGuidance` class or file name.
 - Calendar logic belongs in `OP\MODULE\COUNTER\Calendar` in `Calendar.class.php`.
